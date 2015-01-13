@@ -3,3 +3,7 @@ bochslog.txt
 stage2_eltorito
 *.swp
 *.un~
+iso/boot/kernel.elf
+kernel.elf
+*.o
+*.iso
