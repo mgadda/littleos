@@ -1,11 +1,18 @@
+OBJECTS = loader.o kmain.o
+CC = gcc
+CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
+					-nostartfiles -nodefaultlibs -Wall -Wextra -Werror \
+					-Wall -Wextra -Werror -c 
+LDFLAGS = -T link.ld -melf_i386
+AS = nasm
+ASFLAGS = -f elf
 
+all: kernel.elf
 
-all: kernel.elf iso
-
-run: iso 
+run: os.iso
 	bochs -f bochsrc.txt -q
 	
-iso: kernel.elf 
+os.iso: kernel.elf 
 	cp kernel.elf iso/boot/
 	genisoimage -R\
               -b boot/grub/stage2_eltorito    \
@@ -18,12 +25,14 @@ iso: kernel.elf
               -o os.iso                       \
               iso
 
-kernel.elf: loader.o
-	ld -T link.ld -melf_i386 loader.o -o kernel.elf
+kernel.elf: $(OBJECTS) 
+	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
 
-loader.o:
-	nasm -f elf32 loader.s
-	#nasm -f elf loader.s
+%.o: %.c
+	$(CC) $(CFLAGS) $< -o $@
+
+%.o: %.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 clean:
 	rm -f kernel.elf iso/boot/kernel.elf *.o os.iso
