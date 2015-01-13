@@ -2,7 +2,7 @@
 
 all: kernel.elf iso
 
-run: iso boschsrc.txt 
+run: iso 
 	bochs -f bochsrc.txt -q
 	
 iso: kernel.elf 
@@ -22,9 +22,9 @@ kernel.elf: loader.o
 	ld -T link.ld -melf_i386 loader.o -o kernel.elf
 
 loader.o:
-	#nasm -f elf32 loader.s
-	nasm -f elf loader.s
+	nasm -f elf32 loader.s
+	#nasm -f elf loader.s
 
 clean:
-	rm -f kernel.elf *.o os.iso
+	rm -f kernel.elf iso/boot/kernel.elf *.o os.iso
 
