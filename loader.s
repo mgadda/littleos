@@ -11,9 +11,11 @@ align 4
   dd MAGIC_NUMBER
   dd FLAGS
   dd CHECKSUM
+%define debug xchg bx, bx
 
 loader:
   mov eax, 0xCAFEBABE
+  ;debug
 .loop:
   jmp .loop
 
