@@ -1,4 +1,5 @@
 bochslog.txt
+com1.out
 .vagrant/
 stage2_eltorito
 *.swp
@@ -7,3 +8,4 @@ iso/boot/kernel.elf
 kernel.elf
 *.o
 *.iso
+
