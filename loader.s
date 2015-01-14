@@ -2,6 +2,7 @@ global loader
 
 %define debug xchg bx, bx
 
+section .text:
 loader:
   mov eax, 0xCAFEBABE
   ;debug
