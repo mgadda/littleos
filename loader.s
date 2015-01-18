@@ -7,11 +7,11 @@ loader:
   mov eax, 0xCAFEBABE
   ;debug
   mov esp, kernel_stack + KERNEL_STACK_SIZE   ; set up stack pointer
-  call kmain
+  call kernel
 .loop:
   jmp .loop
 
-extern kmain
+extern kernel
 
 
 KERNEL_STACK_SIZE equ 4096
