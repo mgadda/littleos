@@ -1,10 +1,11 @@
-#include "io.h"
 #include "serial.h"
 #include "framebuffer.h"
-#include "debug.h"
+#include "string.h"
 
 void kernel() {
-  serial_write("No. 5 is alive!", 15);
-  fb_write("No. 5 is alive!", 15);
+  fb_clear();
+  char greeting[] = "No. 5 is alive!";
+  fb_write(greeting, strlen(greeting));
+  serial_write(greeting, strlen(greeting));
   return;
 }

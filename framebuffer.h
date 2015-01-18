@@ -5,10 +5,10 @@
 #define FB_RED            4
 #define FB_MAGENTA        5
 #define FB_BROWN          6
-#define FB_LIGHT_GREY     7 
+#define FB_LIGHT_GREY     7
 #define FB_DARK_GREY      8
-#define FB_LIGHT_BLUE     9 
-#define FB_LIGHT_GREEN    10 
+#define FB_LIGHT_BLUE     9
+#define FB_LIGHT_GREEN    10
 #define FB_LIGHT_CYAN     11
 #define FB_LIGHT_RED      12
 #define FB_LIGHT_MAGENTA  13
@@ -44,3 +44,8 @@ void fb_move_cursor(unsigned short pos);
  */
 void fb_write(char *buf, unsigned int len);
 
+/**
+ * fb_clear
+ * clear the screen
+ */
+void fb_clear();

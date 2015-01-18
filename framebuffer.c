@@ -4,6 +4,12 @@
 #include "io.h"
 #include "framebuffer.h"
 
+#define FB_WIDTH 80
+#define FB_HEIGHT 25
+
+static unsigned int fb_pos_x = 0;
+static unsigned int fb_pos_y = 0;
+
 /**
  * fb_write_cell:
  * Writes a character with the given foreground and background to position i
@@ -25,14 +31,30 @@ void fb_move_cursor(unsigned short pos) {
 }
 
 void fb_write(char *buf, unsigned int len) {
-  unsigned int pos = 0;
   unsigned int i;
-  for (i=0; i<len; ++i) {
-    fb_write_cell(pos++, buf[i], FB_WHITE, FB_BLACK);
+  for (i=0; i<len; i++) {
+    unsigned short pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+    fb_write_cell(pos, buf[i], FB_WHITE, FB_BLACK);
+    fb_move_cursor(pos+1);
+
+    // handle position at end of line
+    if (fb_pos_x == FB_WIDTH || buf[i] == '\n') {
+      fb_pos_y++;
+      fb_pos_x = 0;
+    } else {
+      fb_pos_x++;
+    }
   }
-  fb_move_cursor(len);
-  
 }
 
+void fb_clear() {
+  fb_pos_x = 0;
+  fb_pos_y = 0;
+
+  int i;
+  for (i=0; i<FB_WIDTH*FB_HEIGHT; i++) {
+    fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
+  }
+}
 #endif /* _FRAMEBUFFER_H_ */
 
