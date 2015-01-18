@@ -1,8 +1,8 @@
-OBJECTS = multiboot.o framebuffer.o loader.o kmain.o io.o serial.o
+OBJECTS = multiboot.o framebuffer.o loader.o kernel.o io.o serial.o
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 					-nostartfiles -nodefaultlibs -Wall -Wextra -Werror \
-					-Wall -Wextra -Werror -c 
+					-Wall -Wextra -Werror -c
 LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf

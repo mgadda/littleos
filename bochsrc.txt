@@ -1,5 +1,5 @@
 megs:            32
-display_library: x
+display_library: x, options="gui_debug"
 romimage:        file=/usr/local/share/bochs/BIOS-bochs-latest
 vgaromimage:     file=/usr/local/share/bochs/VGABIOS-lgpl-latest
 ata0-master:     type=cdrom, path=os.iso, status=inserted
