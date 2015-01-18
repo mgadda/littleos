@@ -4,9 +4,8 @@ global loader
 
 section .text:
 loader:
-  mov eax, 0xCAFEBABE
-  ;debug
   mov esp, kernel_stack + KERNEL_STACK_SIZE   ; set up stack pointer
+  push ebx
   call kernel
 .loop:
   jmp .loop
