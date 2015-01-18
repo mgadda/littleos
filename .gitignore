@@ -8,4 +8,4 @@ iso/boot/kernel.elf
 kernel.elf
 *.o
 *.iso
-
+*.sym
