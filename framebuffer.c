@@ -32,13 +32,23 @@ void fb_move_cursor(unsigned short pos) {
 
 void fb_write(char *buf, unsigned int len) {
   unsigned int i;
+  unsigned short pos;
   for (i=0; i<len; i++) {
-    unsigned short pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-    fb_write_cell(pos, buf[i], FB_WHITE, FB_BLACK);
-    fb_move_cursor(pos+1);
+    char c = buf[i];
+    if (c == '\n' || c == '\r') {
+      fb_pos_y++;
+      fb_pos_x = 0;
+      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+      fb_move_cursor(pos+1);
+      continue;
+    } else {
+      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+      fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
+      fb_move_cursor(pos+1);
+    }
 
     // handle position at end of line
-    if (fb_pos_x == FB_WIDTH || buf[i] == '\n') {
+    if (fb_pos_x == FB_WIDTH) {
       fb_pos_y++;
       fb_pos_x = 0;
     } else {
