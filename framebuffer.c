@@ -4,6 +4,7 @@
 #include "io.h"
 #include "framebuffer.h"
 
+#define FRAMEBUFFER_ADDR 0x00B8000;
 #define FB_WIDTH 80
 #define FB_HEIGHT 25
 
@@ -18,7 +19,7 @@ static unsigned int fb_pos_y = 0;
  * i must be between 0 and 80*25 = 2000
  */
 void fb_write_cell(short i, char c, unsigned char fg, unsigned char bg) {
-  char *fb = (char*)0x00B8000;
+  unsigned char *fb = (unsigned char*)FRAMEBUFFER_ADDR;
   fb[i*2] = c;
   fb[i*2 + 1] = ((bg & 0x0f) << 4) | (fg & 0x0f);
 }
