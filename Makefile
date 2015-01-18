@@ -1,4 +1,4 @@
-OBJECTS = multiboot.o framebuffer.o loader.o kernel.o io.o serial.o
+OBJECTS = multiboot.o framebuffer.o loader.o kernel.o io.o serial.o string.o
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 					-nostartfiles -nodefaultlibs -Wall -Wextra -Werror \
