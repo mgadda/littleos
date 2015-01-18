@@ -7,7 +7,7 @@ LDFLAGS = -T link.ld -melf_i386
 AS = nasm
 ASFLAGS = -f elf
 
-all: kernel.elf
+all: kernel.elf os.iso
 
 run: os.iso
 	bochs -f bochsrc.txt -q
