@@ -6,4 +6,5 @@ sudo hwclock -w # the hardware clock is wrong, mysteriously
 echo "US/Pacific" > /etc/timezone
 dpkg-reconfigure -f noninteractive tzdata
 
+echo "export EDITOR = vim" > ~/.bash_profile
 
