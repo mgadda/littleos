@@ -2,7 +2,7 @@ global loader
 
 %define debug xchg bx, bx
 
-section .text:
+section .text
 loader:
   mov esp, kernel_stack + KERNEL_STACK_SIZE   ; set up stack pointer
   push ebx
