@@ -37,6 +37,7 @@ kernel.elf: $(OBJECTS)
 	$(AS) $(ASFLAGS) $< -o $@
 
 dump: kernel.elf
+	readelf -WS kernel.elf
 	objdump -D -Mintel-mnemonics kernel.elf
 
 clean:
