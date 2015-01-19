@@ -1,5 +1,5 @@
-default=0
-timeout=0
+default=100
+timeout=100
 
 title os
 kernel /boot/kernel.elf

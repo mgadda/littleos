@@ -1,5 +1,13 @@
 #include "string.h"
 
+void *memcpy(void *restrict dst, const void *restrict src, unsigned int n) {
+  unsigned int i;
+  for (i=0; i<n; i++) {
+    *((char*)dst+i) = *((char*)src+i);
+  }
+  return dst;
+}
+
 char *itoa(int val, char *buf, int radix) {
   unsigned int i = 0;
   unsigned int start = i;
