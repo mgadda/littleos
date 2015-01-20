@@ -9,3 +9,4 @@ kernel.elf
 *.o
 *.iso
 *.sym
+cruft/
