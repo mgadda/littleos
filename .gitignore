@@ -10,3 +10,4 @@ kernel.elf
 *.iso
 *.sym
 cruft/
+*.beam
