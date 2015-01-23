@@ -41,8 +41,11 @@ void fb_move_cursor(unsigned short pos);
 /**
  * fb_write
  * Writes c-string to framebuffer and advances cursor len number of characters
+ * if len is not passed, string must be null terminated
  */
 void fb_write(char *buf, unsigned int len);
+void fb_write_str(char *buf);
+
 
 /**
  * fb_clear

@@ -58,6 +58,33 @@ void fb_write(char *buf, unsigned int len) {
   }
 }
 
+void fb_write_str(char *buf) {
+  unsigned int i=0;
+  unsigned short pos;
+  while (buf[i] != 0) {
+    char c = buf[i];
+    if (c == '\n' || c == '\r') {
+      fb_pos_y++;
+      fb_pos_x = 0;
+      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+      fb_move_cursor(pos+1);
+      continue;
+    } else {
+      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+      fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
+      fb_move_cursor(pos+1);
+    }
+
+    // handle position at end of line
+    if (fb_pos_x == FB_WIDTH) {
+      fb_pos_y++;
+      fb_pos_x = 0;
+    } else {
+      fb_pos_x++;
+    }
+  }
+}
+
 void fb_clear() {
   fb_pos_x = 0;
   fb_pos_y = 0;

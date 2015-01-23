@@ -1,11 +1,13 @@
-OBJECTS = multiboot.o framebuffer.o loader.o kernel.o io.o serial.o string.o descriptor_tables.o gdt_flush.o
+OBJECTS = multiboot.o framebuffer.o loader.o kernel.o \
+					io.o serial.o string.o interrupt.o \
+					descriptor_tables.o dt.o isr.o
 CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
 					-ffreestanding \
 					-Wall -Wextra -Werror -g -c
 # things you may or may not need -nostdinc -fno-builtin -nostdlib -nostartfiles -nodefaultlibs
 # see http://forum.osdev.org/viewtopic.php?f=1&t=25585
-LDFLAGS = -T link.ld -melf_i386
+LDFLAGS = -T link.ld -melf_i386 -L/usr/lib/gcc/i686-linux-gnu/4.6 -lgcc
 AS = nasm
 ASFLAGS = -f elf
 
