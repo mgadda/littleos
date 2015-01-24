@@ -1,3 +1,5 @@
+#include <stddef.h>
+#include <stdint.h>
 #include "string.h"
 
 char *itoa(int val, char *buf, int radix) {
@@ -39,4 +41,16 @@ unsigned int strlen(const char *buf) {
   unsigned int i=0;
   while(buf[i] != 0) i++;
   return i;
+}
+
+// Terribly naive implementation of memset to get things compiling
+// See http://www.xs-labs.com/en/blog/2013/08/06/optimising-memset/
+// for more details
+void *memset(void *s, int c, size_t n) {
+  char *mem = (char*)s;
+  size_t i;
+  for (i=0; i<n; i++) {
+    mem[i] = (uint8_t)c;
+  }
+  return s;
 }

@@ -7,7 +7,7 @@ isr%1:
   cli                   ; disable interrupts
   push byte 0           ; push dummy error code
   push byte %1          ; push the interrupt number
-  jump isr_common_stub  ; go to common handler
+  jmp isr_common_stub  ; go to common handler
 %endmacro
 
 %macro ISR_ERRCODE 1
@@ -15,7 +15,7 @@ global isr%1
 isr%1:
   cli                   ; disable interrupts
   push byte %1          ; push the interrupt number
-  jump isr_common_stub  ; go to common handler
+  jmp isr_common_stub  ; go to common handler
 %endmacro
 
 isr_common_stub:

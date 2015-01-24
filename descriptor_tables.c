@@ -1,11 +1,14 @@
 // (very loosely) based on code from: http://www.jamesmolloy.co.uk/tutorial_html/4.-The%20GDT%20and%20IDT.html
-#include <string.h>
+#include "string.h"
 #include "descriptor_tables.h"
 
 // Internal use only
 extern void gdt_flush(gdt_ptr_t*);
+extern void idt_flush(idt_ptr_t*);
+
 static void init_gdt();
 static void init_idt();
+
 static void gdt_set_gate(
   int32_t idx,
   uint32_t base,
@@ -229,6 +232,8 @@ static void init_idt() {
   idt_set_gate(29, isr29, IDT_SELECTOR, flags);
   idt_set_gate(30, isr30, IDT_SELECTOR, flags);
   idt_set_gate(31, isr31, IDT_SELECTOR, flags);
+
+  idt_flush(&idt_ptr);
 }
 
 static void idt_set_gate(

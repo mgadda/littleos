@@ -68,6 +68,7 @@ void fb_write_str(char *buf) {
       fb_pos_x = 0;
       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
       fb_move_cursor(pos+1);
+      i++;
       continue;
     } else {
       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
@@ -82,6 +83,7 @@ void fb_write_str(char *buf) {
     } else {
       fb_pos_x++;
     }
+    i++;
   }
 }
 
