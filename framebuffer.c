@@ -1,6 +1,3 @@
-#ifndef _FRAMEBUFFER_H_
-#define _FRAMEBUFFER_H_
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -108,6 +105,3 @@ void fb_wrap_vertical() {
   fb_clear_row(fb_pos_y);
   fb_move_cursor(0);
 }
-
-#endif /* _FRAMEBUFFER_H_ */
-
