@@ -1,6 +1,6 @@
 OBJECTS = multiboot.o framebuffer.o loader.o kernel.o \
 					io.o serial.o string.o interrupt.o \
-					descriptor_tables.o dt.o isr.o
+					descriptor_tables.o dt.o isr.o timer.o apic.o
 CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
 					-ffreestanding \

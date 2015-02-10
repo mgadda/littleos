@@ -1,10 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include "string.h"
+#include "framebuffer.h"
 
 char *itoa(int val, char *buf, int radix) {
-  unsigned int i = 0;
-  unsigned int start = i;
+  uint32_t i = 0;
+  uint32_t start = i;
   if (val < 0 && radix == 10) {
     buf[i++] = '-';
     start = i;
@@ -24,7 +26,7 @@ char *itoa(int val, char *buf, int radix) {
   } while (x /= radix);
 
   char *s = buf+start;
-  char *e = s+(i-3);
+  char *e = buf+(i-1);
 
   while(s < e) {
     char t = *s;
@@ -37,7 +39,38 @@ char *itoa(int val, char *buf, int radix) {
   return buf;
 }
 
-unsigned int strlen(const char *buf) {
+char *uitoa(uint32_t val, char *buf, int radix) {
+  uint32_t i = 0;
+  uint32_t start = i;
+
+  if (radix == 16) {
+    buf[i++] = '0';
+    buf[i++] = 'x';
+    start = i;
+  }
+
+  uint32_t x = val;
+  do {
+    uint32_t a = x % radix;
+    if (a < 10) buf[i++] = a + '0';
+    else buf[i++] = a + 'a' - 10;
+  } while (x /= radix);
+
+  char *s = buf+start;
+  char *e = buf+(i-1);
+
+  while(s < e) {
+    char t = *s;
+    *s = *e;
+    *e = t;
+    s++; e--;
+  }
+
+  buf[i] = 0;
+  return buf;
+}
+
+size_t strlen(const char *buf) {
   unsigned int i=0;
   while(buf[i] != 0) i++;
   return i;
@@ -53,4 +86,50 @@ void *memset(void *s, int c, size_t n) {
     mem[i] = (uint8_t)c;
   }
   return s;
+}
+
+void *memmove(void *dst, const void *src, size_t len) {
+  char *dstmem = (char*)dst;
+  char *srcmem = (char*)src;
+  size_t i;
+  for (i=0; i<len; i++) {
+    dstmem[i] = srcmem[i];
+  }
+  return dstmem;
+}
+
+int printf(const char *format, ...) {
+  va_list ap;
+  va_start(ap, format);
+
+  size_t i;
+  char buf[20];
+  int val;
+  int32_t uval;
+  for (i=0; i<strlen(format); i++) {
+    if (format[i] == '%') {
+      i++;
+      while (format[i] == ' ') i++;
+
+      switch(format[i]) {
+        case 'i':
+          val = va_arg(ap, int);
+          itoa(val, buf, 10);
+          fb_write_str(buf);
+          break;
+        case 'x':
+          uval = va_arg(ap, uint32_t);
+          uitoa(uval, buf, 16);
+          fb_write_str(buf);
+          break;
+        default:
+          fb_write((char*)format+i, 1);
+      }
+    } else {
+      fb_write((char*)format+i, 1);
+    }
+  }
+
+  va_end(ap);
+  return 0;
 }

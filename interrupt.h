@@ -14,11 +14,4 @@ typedef struct idt_entry_t {
   uint16_t offset_low; // 0 - 15
 } idt_entry_t;
 
-
-/**
- * Accepts interrupt_t struct and converts it an IDT entry
- */
-void create_idt_entry() {
-
-}
 #endif /* __INTERRUPT_H_ */

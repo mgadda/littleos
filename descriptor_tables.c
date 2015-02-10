@@ -1,6 +1,14 @@
 // (very loosely) based on code from: http://www.jamesmolloy.co.uk/tutorial_html/4.-The%20GDT%20and%20IDT.html
+// and also: http://www.jamesmolloy.co.uk/tutorial_html/5.-IRQs%20and%20the%20PIT.html
+#include <stdbool.h>
+#include <cpuid.h>
+
 #include "string.h"
 #include "descriptor_tables.h"
+#include "io.h"
+#include "apic.h"
+
+#include "debug.h"
 
 // Internal use only
 extern void gdt_flush(gdt_ptr_t*);
@@ -185,8 +193,98 @@ static void gdt_set_gate(
 #define IDT_DPL_RING2 2
 #define IDT_DPL_RING3 3
 
+// PIC - from http://wiki.osdev.org/8259_PIC
+#define PIC1            0x20    /* IO base address for master PIC */
+#define PIC2            0xA0    /* IO base address for slave PIC */
+#define PIC1_COMMAND    PIC1
+#define PIC1_DATA       (PIC1+1)
+#define PIC2_COMMAND    PIC2
+#define PIC2_DATA       (PIC2+1)
+
+#define PIC_EOI         0x20    /* End-of-interrupt command code */
+
+#define ICW1_ICW4       0x01    /* ICW4 (not) needed */
+#define ICW1_SINGLE     0x02    /* Single (cascade) mode */
+#define ICW1_INTERVAL4  0x04    /* Call address interval 4 (8) */
+#define ICW1_LEVEL      0x08    /* Level triggered (edge) mode */
+#define ICW1_INIT       0x10    /* Initialization - required! */
+
+#define ICW4_8086       0x01    /* 8086/88 (MCS-80/85) mode */
+#define ICW4_AUTO       0x02    /* Auto (normal) EOI */
+#define ICW4_BUF_SLAVE  0x08    /* Buffered mode/slave */
+#define ICW4_BUF_MASTER 0x0C    /* Buffered mode/master */
+#define ICW4_SFNM       0x10    /* Special fully nested (not) */
+
+const uint32_t CPUID_FLAG_MSR = 1 << 5;
+
+bool cpuHasMSR()
+{
+   uint32_t a, b, c, d; // eax, (ebx, ecx,) edx
+   __get_cpuid(1, &a, &b, &c, &d);
+   return d & CPUID_FLAG_MSR;
+}
+
+void cpuGetMSR(uint32_t msr, uint32_t *lo, uint32_t *hi)
+{
+   asm volatile("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
+}
+
+// static bool disableLocalAPIC() {
+//   if (cpuHasMSR()) {
+//     cpuGetMSR
+//   } else {
+//     return false;
+//   }
+// }
+
+static inline bool are_interrupts_enabled()
+{
+    unsigned long flags;
+    asm volatile ( "pushf\n\t"
+                   "pop %0"
+                   : "=g"(flags) );
+    return flags & (1 << 9);
+}
+
+static inline void io_wait() {
+
+}
+
+// from http://wiki.osdev.org/8259_PIC
+static void PIC_remap(uint8_t offset1, uint8_t offset2) {
+  unsigned char a1, a2;
+
+  a1 = inb(PIC1_DATA);                        // save masks
+  a2 = inb(PIC2_DATA);
+
+  outb(PIC1_COMMAND, ICW1_INIT+ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+  io_wait();
+  outb(PIC2_COMMAND, ICW1_INIT+ICW1_ICW4);
+  io_wait();
+  outb(PIC1_DATA, offset1);                 // ICW2: Master PIC vector offset
+  io_wait();
+  outb(PIC2_DATA, offset2);                 // ICW2: Slave PIC vector offset
+  io_wait();
+  outb(PIC1_DATA, 4);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+  io_wait();
+  outb(PIC2_DATA, 2);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
+  io_wait();
+
+  outb(PIC1_DATA, ICW4_8086);
+  io_wait();
+  outb(PIC2_DATA, ICW4_8086);
+  io_wait();
+
+  outb(PIC1_DATA, a1);   // restore saved masks.
+  outb(PIC2_DATA, a2);
+}
 
 static void init_idt() {
+  printf("cpuHasMSR=%i\n", cpuHasMSR());
+  printf("Disabling APIC...\n");
+  uint32_t msr = disable_apic();
+  printf("MSR 0x1b=%x\n", msr);
+
   idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
   idt_ptr.base = idt_entries;
 
@@ -233,7 +331,42 @@ static void init_idt() {
   idt_set_gate(30, isr30, IDT_SELECTOR, flags);
   idt_set_gate(31, isr31, IDT_SELECTOR, flags);
 
+  // Remap the irq table
+  printf("Remapping IRQs\n");
+  PIC_remap(0x20, 0x28);
+  // outb(0x20, 0x11);
+  // outb(0xA0, 0x11);
+  // outb(0x21, 0x20);
+  // outb(0xA1, 0x28);
+  // outb(0x21, 0x04);
+  // outb(0xA1, 0x02);
+  // outb(0x21, 0x01);
+  // outb(0xA1, 0x01);
+  // outb(0x21, 0x0);
+  // outb(0xA1, 0x0);
+
+  idt_set_gate(32, irq0, IDT_SELECTOR, flags);
+  idt_set_gate(33, irq1, IDT_SELECTOR, flags);
+  idt_set_gate(34, irq2, IDT_SELECTOR, flags);
+  idt_set_gate(35, irq3, IDT_SELECTOR, flags);
+  idt_set_gate(36, irq4, IDT_SELECTOR, flags);
+  idt_set_gate(37, irq5, IDT_SELECTOR, flags);
+  idt_set_gate(38, irq6, IDT_SELECTOR, flags);
+  idt_set_gate(39, irq7, IDT_SELECTOR, flags);
+  idt_set_gate(40, irq8, IDT_SELECTOR, flags);
+  idt_set_gate(41, irq9, IDT_SELECTOR, flags);
+  idt_set_gate(42, irq10, IDT_SELECTOR, flags);
+  idt_set_gate(43, irq11, IDT_SELECTOR, flags);
+  idt_set_gate(44, irq12, IDT_SELECTOR, flags);
+  idt_set_gate(45, irq13, IDT_SELECTOR, flags);
+  idt_set_gate(46, irq14, IDT_SELECTOR, flags);
+  idt_set_gate(47, irq15, IDT_SELECTOR, flags);
+
   idt_flush(&idt_ptr);
+
+  // enable hardware interrupts
+  asm volatile ("sti");
+  if (are_interrupts_enabled()) printf("interrupts enabled.\n");
 }
 
 static void idt_set_gate(
