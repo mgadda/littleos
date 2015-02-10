@@ -56,14 +56,14 @@ void fb_write(char *buf, unsigned int len) {
     }
 
     // If we've reached the end of a line (right side of screen)
-    if (fb_pos_x == FB_WIDTH) {
+    if (fb_pos_x >= FB_WIDTH-1) {
       fb_newline();
     } else {
       fb_pos_x++;
     }
 
     // If we've reached the bottom of the screen
-    if (fb_pos_y >= FB_HEIGHT) {
+    if (fb_pos_y >= FB_HEIGHT-1) {
       fb_shift_up();
       //fb_wrap_vertical();
     }
@@ -82,6 +82,7 @@ void fb_clear() {
   for (i=0; i<FB_WIDTH*FB_HEIGHT; i++) {
     fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
   }
+  fb_move_cursor(0);
 }
 
 void fb_clear_row(uint8_t row) {
@@ -97,7 +98,6 @@ void fb_shift_up() {
   uint16_t *fb = (uint16_t*)FRAMEBUFFER_ADDR;
   memmove(fb, fb+FB_WIDTH, FB_WIDTH*(FB_HEIGHT-1));
   fb_clear_row(FB_HEIGHT-1);
-  fb_pos_y = FB_HEIGHT-1;
 }
 
 void fb_wrap_vertical() {
