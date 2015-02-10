@@ -77,43 +77,6 @@ void fb_write_str(char *buf) {
   fb_write(buf, strlen(buf));
 }
 
-// void fb_write_str(char *buf) {
-//   unsigned int i=0;
-//   unsigned short pos;
-//   while (buf[i] != 0) {
-//     char c = buf[i];
-//     if (c == '\n' || c == '\r') {
-//       fb_pos_y++;
-//       fb_pos_x = 0;
-//       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-//       fb_clear_row(fb_pos_y);
-//       fb_move_cursor(pos);
-//       i++;
-//       continue;
-//     } else {
-//       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-//       fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
-//       fb_move_cursor(pos);
-//     }
-
-//     // handle position at end of line
-//     if (fb_pos_x == FB_WIDTH) {
-//       fb_pos_y++;
-//       fb_clear_row(fb_pos_y);
-//       fb_pos_x = 0;
-//     } else {
-//       fb_pos_x++;
-//     }
-
-//     if (fb_pos_y >= FB_HEIGHT) {
-//       //fb_shift_up();
-//       fb_wrap_vertical();
-//     }
-
-//     i++;
-//   }
-// }
-
 void fb_clear() {
   fb_pos_x = 0;
   fb_pos_y = 0;
