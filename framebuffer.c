@@ -1,8 +1,13 @@
 #ifndef _FRAMEBUFFER_H_
 #define _FRAMEBUFFER_H_
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include "io.h"
 #include "framebuffer.h"
+#include "string.h"
+#include "serial.h"
 
 #define FRAMEBUFFER_ADDR 0x00B8000;
 #define FB_WIDTH 80
@@ -31,61 +36,83 @@ void fb_move_cursor(unsigned short pos) {
   outb(FB_DATA_PORT, pos & 0x00FF);
 }
 
+void fb_newline() {
+  fb_pos_y++;
+  fb_pos_x = 0;
+  uint16_t pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+  fb_clear_row(fb_pos_y);
+  fb_move_cursor(pos);
+}
+
 void fb_write(char *buf, unsigned int len) {
   unsigned int i;
-  unsigned short pos;
+  uint16_t pos;
   for (i=0; i<len; i++) {
     char c = buf[i];
     if (c == '\n' || c == '\r') {
-      fb_pos_y++;
-      fb_pos_x = 0;
-      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-      fb_move_cursor(pos+1);
+      fb_newline();
       continue;
     } else {
       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
       fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
-      fb_move_cursor(pos+1);
+      fb_move_cursor(pos);
     }
 
-    // handle position at end of line
+    // If we've reached the end of a line (right side of screen)
     if (fb_pos_x == FB_WIDTH) {
-      fb_pos_y++;
-      fb_pos_x = 0;
+      fb_newline();
     } else {
       fb_pos_x++;
+    }
+
+    // If we've reached the bottom of the screen
+    if (fb_pos_y >= FB_HEIGHT) {
+      fb_shift_up();
+      //fb_wrap_vertical();
     }
   }
 }
 
 void fb_write_str(char *buf) {
-  unsigned int i=0;
-  unsigned short pos;
-  while (buf[i] != 0) {
-    char c = buf[i];
-    if (c == '\n' || c == '\r') {
-      fb_pos_y++;
-      fb_pos_x = 0;
-      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-      fb_move_cursor(pos+1);
-      i++;
-      continue;
-    } else {
-      pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-      fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
-      fb_move_cursor(pos+1);
-    }
-
-    // handle position at end of line
-    if (fb_pos_x == FB_WIDTH) {
-      fb_pos_y++;
-      fb_pos_x = 0;
-    } else {
-      fb_pos_x++;
-    }
-    i++;
-  }
+  fb_write(buf, strlen(buf));
 }
+
+// void fb_write_str(char *buf) {
+//   unsigned int i=0;
+//   unsigned short pos;
+//   while (buf[i] != 0) {
+//     char c = buf[i];
+//     if (c == '\n' || c == '\r') {
+//       fb_pos_y++;
+//       fb_pos_x = 0;
+//       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+//       fb_clear_row(fb_pos_y);
+//       fb_move_cursor(pos);
+//       i++;
+//       continue;
+//     } else {
+//       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
+//       fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
+//       fb_move_cursor(pos);
+//     }
+
+//     // handle position at end of line
+//     if (fb_pos_x == FB_WIDTH) {
+//       fb_pos_y++;
+//       fb_clear_row(fb_pos_y);
+//       fb_pos_x = 0;
+//     } else {
+//       fb_pos_x++;
+//     }
+
+//     if (fb_pos_y >= FB_HEIGHT) {
+//       //fb_shift_up();
+//       fb_wrap_vertical();
+//     }
+
+//     i++;
+//   }
+// }
 
 void fb_clear() {
   fb_pos_x = 0;
@@ -96,5 +123,28 @@ void fb_clear() {
     fb_write_cell(i, ' ', FB_WHITE, FB_BLACK);
   }
 }
+
+void fb_clear_row(uint8_t row) {
+  size_t i;
+  for (i=0; i<FB_WIDTH; i++) {
+    fb_write_cell((row*FB_WIDTH)+i, ' ', FB_WHITE, FB_BLACK);
+  }
+}
+
+void fb_shift_up() {
+  // use 16-bits here because each cell is 16-bits wide
+  // this makes the pointer arithmetic work out correctly here
+  uint16_t *fb = (uint16_t*)FRAMEBUFFER_ADDR;
+  memmove(fb, fb+FB_WIDTH, FB_WIDTH*(FB_HEIGHT-1));
+  fb_clear_row(FB_HEIGHT-1);
+  fb_pos_y = FB_HEIGHT-1;
+}
+
+void fb_wrap_vertical() {
+  fb_pos_y = 0;
+  fb_clear_row(fb_pos_y);
+  fb_move_cursor(0);
+}
+
 #endif /* _FRAMEBUFFER_H_ */
 

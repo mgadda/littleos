@@ -1,3 +1,8 @@
+#ifndef __FRAMEBUFFER_H__
+#define __FRAMEBUFFER_H__
+
+#include <stdint.h>
+
 #define FB_BLACK          0
 #define FB_BLUE           1
 #define FB_GREEN          2
@@ -52,3 +57,9 @@ void fb_write_str(char *buf);
  * clear the screen
  */
 void fb_clear();
+void fb_clear_row(uint8_t row);
+void fb_shift_up();
+void fb_wrap_vertical();
+void fb_newline();
+
+#endif
