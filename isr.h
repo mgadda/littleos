@@ -2,6 +2,8 @@
 #ifndef __ISR_H__
 #define __ISR_H__
 
+#include <stdint.h>
+
 #define IRQ0 32
 #define IRQ1 33
 #define IRQ2 34

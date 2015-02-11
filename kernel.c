@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "descriptor_tables.h"
 #include "timer.h"
+#include "keyboard.h"
 
 void kernel(multiboot_info_t *info) {
   fb_clear();

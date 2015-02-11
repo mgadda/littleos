@@ -4,6 +4,5 @@
 #include <stdint.h>
 
 void init_timer(uint32_t frequency);
-void init_keyboard(); // TODO: move out of timer.h
 
 #endif
