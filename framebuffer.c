@@ -33,12 +33,27 @@ void fb_move_cursor(unsigned short pos) {
   outb(FB_DATA_PORT, pos & 0x00FF);
 }
 
+// move cursor to next line
+//
 void fb_newline() {
-  fb_pos_y++;
+  if (fb_pos_y >= FB_HEIGHT-1)
+    fb_shift_up();
+  else
+    fb_pos_y++;
+
   fb_pos_x = 0;
-  uint16_t pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
-  fb_clear_row(fb_pos_y);
-  fb_move_cursor(pos);
+  fb_move_cursor(fb_pos_x + (fb_pos_y * FB_WIDTH));
+}
+
+// advances cursor forward one character
+// if at end of line, wrap to next line
+void fb_advance_pos() {
+  if (fb_pos_x >= FB_WIDTH-1)
+    fb_newline();
+  else
+    fb_pos_x++;
+
+  fb_move_cursor(fb_pos_x + (fb_pos_y * FB_WIDTH));
 }
 
 void fb_write(char *buf, unsigned int len) {
@@ -48,24 +63,10 @@ void fb_write(char *buf, unsigned int len) {
     char c = buf[i];
     if (c == '\n' || c == '\r') {
       fb_newline();
-      continue;
     } else {
       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
       fb_write_cell(pos, c, FB_WHITE, FB_BLACK);
-      fb_move_cursor(pos);
-    }
-
-    // If we've reached the end of a line (right side of screen)
-    if (fb_pos_x >= FB_WIDTH-1) {
-      fb_newline();
-    } else {
-      fb_pos_x++;
-    }
-
-    // If we've reached the bottom of the screen
-    if (fb_pos_y >= FB_HEIGHT-1) {
-      fb_shift_up();
-      //fb_wrap_vertical();
+      fb_advance_pos();
     }
   }
 }
@@ -96,7 +97,7 @@ void fb_shift_up() {
   // use 16-bits here because each cell is 16-bits wide
   // this makes the pointer arithmetic work out correctly here
   uint16_t *fb = (uint16_t*)FRAMEBUFFER_ADDR;
-  memmove(fb, fb+FB_WIDTH, FB_WIDTH*(FB_HEIGHT-1));
+  memmove(fb, fb+FB_WIDTH, FB_WIDTH*2*(FB_HEIGHT*2-1));
   fb_clear_row(FB_HEIGHT-1);
 }
 
