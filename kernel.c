@@ -1,11 +1,11 @@
-#include "serial.h"
-#include "framebuffer.h"
-#include "string.h"
-#include "multiboot.h"
 #include "debug.h"
 #include "descriptor_tables.h"
-#include "timer.h"
+#include "framebuffer.h"
 #include "keyboard.h"
+#include "multiboot.h"
+#include "serial.h"
+#include "string.h"
+#include "timer.h"
 
 void kernel(multiboot_info_t *info) {
   fb_clear();
