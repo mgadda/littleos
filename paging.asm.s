@@ -3,7 +3,7 @@ global enable_paging
 
 section .text
 load_page_directory:
-  mov eax, [esp]
+  mov eax, [esp+4]
   mov ebx, cr3
   and ebx, 0xfff        ; zero out 20 high bits
   and eax, 0xfffff000
