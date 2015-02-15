@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct page_directory_entry {
+struct directory {
   uint8_t present:1; // bit 0: always 1
   uint8_t rw:1; // bit 1: read/write
   uint8_t us:1; // bit 2: user or supervisor
@@ -15,9 +15,9 @@ struct page_directory_entry {
   uint8_t ignored2:4; // bit 8 - 11
   uint32_t page_table:20; // bit 12 - 31: physical address of 4KB aligned page table referenced by this entry
 } __attribute__((packed));
-typedef struct page_directory_entry page_directory_entry_t;
+typedef struct directory directory_t;
 
-struct page_table_entry {
+struct page {
   uint8_t present:1; // bit 0: always 1
   uint8_t rw:1; // bit 1: read/write
   uint8_t us:1; // bit 2: user or supervisor
@@ -27,10 +27,10 @@ struct page_table_entry {
   uint8_t d:1; // bit 6: dirty
   uint8_t pat:1; // bit 7: must be 0 unless PAT supported
   uint8_t g:1; // bit 8: global translation
-  uint8_t ignored2:4; // bit 9 - 11
-  uint32_t page_table:20; // bit 12 - 31: physical address of 4KB page frame
+  uint8_t ignored2:3; // bit 9 - 11
+  uint32_t page_frame:20; // bit 12 - 31: physical address of 4KB page frame
 } __attribute__((packed));
-typedef struct page_table_entry page_table_entry_t;
+typedef struct page page_t;
 
 void init_paging();
 

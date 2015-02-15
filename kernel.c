@@ -6,6 +6,7 @@
 #include "serial.h"
 #include "string.h"
 #include "timer.h"
+#include "paging.h"
 
 void kernel(multiboot_info_t *info) {
   fb_clear();
@@ -24,5 +25,6 @@ void kernel(multiboot_info_t *info) {
 
   //init_timer(19);
   init_keyboard();
+  init_paging();
   return;
 }

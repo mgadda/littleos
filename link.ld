@@ -2,6 +2,8 @@ ENTRY(loader)
 
 . = 0x00100000;
 
+kernel_start = .;
+
 SECTIONS {
   .multiboot ALIGN (0x1000): { multiboot.o }
   
@@ -27,3 +29,5 @@ SECTIONS {
   }
 
 }
+
+kernel_end = .;

@@ -15,11 +15,17 @@
 
 #define PIC_EOI         0x20    /* End-of-interrupt command code */
 
-void isr_handler(registers_t regs) {
-  printf("s/w interrupt: %i\n", regs.int_no);
-}
-
 isr_t interrupt_handlers[256];
+
+void isr_handler(registers_t regs) {
+  if (interrupt_handlers[regs.int_no] != 0) {
+    isr_t handler = interrupt_handlers[regs.int_no];
+    handler(regs);
+  } else {
+    printf("unhandled s/w interrupt: %i\n", regs.int_no);
+    printf("eip: %x\n", regs.eip);
+  }
+}
 
 void ack_irq(int int_no) {
   // Send an EOI (end of interrupt) signal to the PICs.
@@ -40,8 +46,7 @@ void irq_handler(registers_t regs)
 
   ack_irq(regs.int_no);
 
-  if (interrupt_handlers[regs.int_no] != 0)
-  {
+  if (interrupt_handlers[regs.int_no] != 0) {
      isr_t handler = interrupt_handlers[regs.int_no];
      handler(regs);
   }
