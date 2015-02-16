@@ -12,7 +12,6 @@ load_page_directory:
   ret
 
 enable_paging:
-  xchg bx, bx
   mov eax, cr0
   or eax, 0x80000001  ; set PE (bit 0) and PG (bit 31)
   mov cr0, eax

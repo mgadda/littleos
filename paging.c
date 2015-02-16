@@ -50,18 +50,18 @@ void handle_page_fault(registers_t regs) {
 #define PAGE_SIZE_4MB   1
 
 void identity_map(uint32_t addr) {
-  printf("\n[paging] identity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
+  // printf("\n[paging] identity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
 
   uint32_t directory_offset = addr >> 22; // 31:22
   uint32_t table_offset = (addr >> 12) & 0x3ff; // 21:12
-  printf("\tdirectory offset: %x\n", directory_offset);
-  printf("\ttable offset: %x\n", table_offset);
+  // printf("\tdirectory offset: %x\n", directory_offset);
+  // printf("\ttable offset: %x\n", table_offset);
 
   directory_t *directory = &page_directory[directory_offset/4];
   page_t *table;
-  printf("[paging] kernel page directory resides at %x\n", page_directory);
+  // printf("[paging] kernel page directory resides at %x\n", page_directory);
   if (!directory->present) {
-    printf("[paging] configuring new page directory entry with index %i at %x\n", directory_offset, directory);
+    // printf("[paging] configuring new page directory entry with index %i at %x\n", directory_offset, directory);
     directory->present = 1;
     directory->rw = PAGE_READWRITE;
     directory->us = PAGE_KERNEL;
@@ -71,22 +71,22 @@ void identity_map(uint32_t addr) {
     memset(table, 0, 0x1000);
 
     directory->page_table = (uint32_t)table >> 12; // table base (20 high bits)
-    printf("[paging] directory->page_table is now %x\n", directory->page_table << 12);
+    // printf("[paging] directory->page_table is now %x\n", directory->page_table << 12);
   } else {
     table = (page_t*)(directory->page_table << 12);
-    printf("[paging] directory->page_table already exists at %x\n", table);
+    // printf("[paging] directory->page_table already exists at %x\n", table);
   }
 
   page_t *page = &table[table_offset];
   if (!page->present) {
-    printf("[paging] configuring new page table entry at %x\n", page);
+    // printf("[paging] configuring new page table entry at %x\n", page);
     page->present = 1;
     page->rw = PAGE_READWRITE;
     page->us = PAGE_KERNEL;
   }
 
   page->page_frame = addr >> 12; // frame base (20 high bits)
-  printf("[paging] page %x is now mapped to frame %x\n", addr, page->page_frame << 12);
+  // printf("[paging] page %x is now mapped to frame %x\n", addr, page->page_frame << 12);
   set_frame(addr);
 }
 
@@ -94,13 +94,9 @@ extern void load_page_directory(directory_t *directory);
 extern void enable_paging();
 
 void init_paging() {
-  printf("[paging] initializing paging...\n");
-  // identity map 0x00000000 - 0x00400000 (first 4MB) which includes kernel
-  // identity map 0x00B8000 - 0x00B8000 + 80*25*2 for framebuffer
-  // anything else?
-  // yes, actually map range from 0 to N including all paging tables needed
-  // to create that very map. this is necessary so that those tables
-  // can be accessed once paging is enabled.
+  //printf("[paging] initializing paging...\n");
+  // identity map 0x00000000 - 0x00400000 (first 3MB) which includes kernel
+  // and paging data structures
 
   page_directory = (directory_t*)kmalloc_page();
   // mark all directory entries "not present"
