@@ -17,6 +17,6 @@ void *kmalloc_page() {
     next_free &= 0xfffff000; // align it
     next_free += 0x1000; // advance to unallocated memory
   }
-  printf("allocated page at %x\n", next_free);
+  printf("[memory] allocated page at %x\n", next_free);
   return kmalloc(0x1000);
 }
