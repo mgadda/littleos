@@ -17,7 +17,7 @@ all: kernel.elf os.iso
 run: os.iso
 	bochs -f bochsrc.txt -q
 
-os.iso: kernel.elf
+os.iso: kernel.elf kernel.sym
 	cp kernel.elf iso/boot/
 	genisoimage -R \
               -b boot/grub/stage2_eltorito    \
@@ -43,6 +43,11 @@ dump: kernel.elf
 	readelf -WS kernel.elf
 	objdump -D -Mintel-mnemonics kernel.elf
 
+kernel.sym: kernel.elf
+	objdump -D kernel.elf | grep -e '^[^ ]* <' | sed -e 's/<//' -e 's/>://' > kernel.sym
+	#objcopy --only-keep-debug kernel.elf kernel.sym
+	#objcopy --strip-debug kernel.elf
+
 clean:
-	rm -f kernel.elf iso/boot/kernel.elf *.o os.iso
+	rm -f kernel.elf kernel.sym iso/boot/kernel.elf *.o os.iso
 
