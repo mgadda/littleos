@@ -1,6 +1,6 @@
-OBJECTS = multiboot.o framebuffer.o loader.o kernel.o \
-					io.o serial.o string.o interrupt.o \
-					descriptor_tables.o dt.o isr.o timer.o \
+OBJECTS = multiboot.asm.o framebuffer.o loader.asm.o kernel.o \
+					io.asm.o serial.o string.o interrupt.asm.o \
+					descriptor_tables.o descriptor_tables.asm.o isr.o timer.o \
 					apic.o keyboard.o paging.o paging.asm.o memory.o
 CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
@@ -36,7 +36,7 @@ kernel.elf: $(OBJECTS)
 %.o: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
-%.o: %.s
+%.asm.o: %.s
 	$(AS) $(ASFLAGS) $< -o $@
 
 dump: kernel.elf
