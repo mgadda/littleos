@@ -14,7 +14,7 @@ struct gdt_access {
   uint8_t dt:1;             // 40: descriptor type
   uint8_t dpl:2;            // 41 - 42: descriptor privilege level - Ring 0 - 3
   uint8_t p:1;              // 43: is segment present? (1=yes)
-} __attribute((packed));
+} __attribute__((packed));
 typedef struct gdt_access gdt_access_t;
 
 struct gdt_entry {

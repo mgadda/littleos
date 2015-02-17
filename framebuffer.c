@@ -6,9 +6,10 @@
 #include "string.h"
 #include "serial.h"
 
-#define FRAMEBUFFER_ADDR 0x00B8000;
+#define FRAMEBUFFER_ADDR 0x000B8000;
 #define FB_WIDTH 80
 #define FB_HEIGHT 25
+#define TAB "  "
 
 static unsigned int fb_pos_x = 0;
 static unsigned int fb_pos_y = 0;
@@ -63,6 +64,8 @@ void fb_write(char *buf, unsigned int len) {
     char c = buf[i];
     if (c == '\n' || c == '\r') {
       fb_newline();
+    } else if (c == '\t') {
+      fb_write_str(TAB);
     } else {
       pos = fb_pos_x + (fb_pos_y * FB_WIDTH);
       fb_write_cell(pos, c, FB_WHITE, FB_BLACK);

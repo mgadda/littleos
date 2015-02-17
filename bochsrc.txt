@@ -9,3 +9,4 @@ clock:           sync=realtime, time0=local
 cpu:             count=1, ips=1000000
 magic_break:     enabled=1
 com1:            enabled=1, mode=file, dev=com1.out
+debug_symbols:   file=kernel.sym
