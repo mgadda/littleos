@@ -8,7 +8,7 @@
 #include "memory.h"
 #include "debug.h"
 
-directory_t *page_directory; // allocated at run-time to ensure page alignment
+extern directory_t boot_page_directory; // pre-allocated by nasm (also page aligned)
 
 uint32_t frame_allocations[32767];
 
@@ -49,11 +49,11 @@ void handle_page_fault(registers_t regs) {
 #define PAGE_SIZE_4KB   0
 #define PAGE_SIZE_4MB   1
 
-void identity_map(uint32_t addr) {
+void map(directory_t *page_directory, uint32_t vaddr, uint32_t paddr) {
   // printf("\n[paging] identity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
 
-  uint32_t directory_offset = addr >> 22; // 31:22
-  uint32_t table_offset = (addr >> 12) & 0x3ff; // 21:12
+  uint32_t directory_offset = vaddr >> 22; // 31:22
+  uint32_t table_offset = (vaddr >> 12) & 0x3ff; // 21:12
   // printf("\tdirectory offset: %x\n", directory_offset);
   // printf("\ttable offset: %x\n", table_offset);
 
@@ -85,9 +85,9 @@ void identity_map(uint32_t addr) {
     page->us = PAGE_KERNEL;
   }
 
-  page->page_frame = addr >> 12; // frame base (20 high bits)
+  page->page_frame = paddr >> 12; // frame base (20 high bits)
   // printf("[paging] page %x is now mapped to frame %x\n", addr, page->page_frame << 12);
-  set_frame(addr);
+  set_frame(paddr);
 }
 
 extern void load_page_directory(directory_t *directory);
@@ -95,26 +95,13 @@ extern void enable_paging();
 
 void init_paging() {
   //printf("[paging] initializing paging...\n");
-  // identity map 0x00000000 - 0x00400000 (first 3MB) which includes kernel
-  // and paging data structures
-
-  page_directory = (directory_t*)kmalloc_page();
-  // mark all directory entries "not present"
-  memset(page_directory, 0, sizeof(directory_t)*1024);
-
-  // starting with address 0x00000000, increment one page at a time
-  // until we've identity mapped pages for all known allocated memory
-  uint32_t addr;
-  for (addr=0x0; addr<0x00300000; addr += 0x1000) {
-    identity_map(addr);
-  }
 
   // listen for page faults
   register_interrupt_handler(14, handle_page_fault);
 
-  // finally: put &page_directory in high 20 bits of cr3 register
-  // enable paging: set bit 31 (PG) of cr0 to 1.
-  load_page_directory(page_directory);
+  printf("boot_page_directory=%x\n", &boot_page_directory);
+
+  load_page_directory(&boot_page_directory);
   enable_paging();
   printf("[paging] paging enabled, good luck.\n");
 }
