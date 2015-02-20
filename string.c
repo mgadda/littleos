@@ -140,6 +140,7 @@ int printf(const char *format, ...) {
         case 's':
           s = va_arg(ap, char*);
           fb_write_str(s);
+          break;
         default:
           fb_write((char*)format+i, 1);
       }
