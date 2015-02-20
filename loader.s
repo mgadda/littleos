@@ -1,4 +1,5 @@
 global loader
+extern kernel
 
 %define debug xchg bx, bx
 
@@ -9,9 +10,6 @@ loader:
   call kernel
 .loop:
   jmp .loop
-
-extern kernel
-
 
 KERNEL_STACK_SIZE equ 4096
 
