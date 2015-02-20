@@ -37,6 +37,5 @@ load_page_directory:    ; put &boot_page_directory in high 20 bits of cr3 regist
 enable_paging:
   mov eax, cr0
   or eax, 0x80000001  ; set PE (bit 0) and PG (bit 31)
-  xchg bx, bx
   mov cr0, eax
   ret

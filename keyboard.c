@@ -4,6 +4,7 @@
 #include "isr.h"
 #include "io.h"
 #include "string.h"
+#include "log.h"
 
 #define KBD_DATA_PORT 0x60
 
@@ -52,25 +53,18 @@ static void keyboard_cb(registers_t regs) {
         c = scan_map_shift[scan_code]; // TODO: add shifted map
 
       if (c != -1) {
-#ifdef DEBUG
-        printf("scan_code=%x ascii=%c\n", scan_code, c);
-#else
+        //debug("scan_code=%x ascii=%c", scan_code, c);
         printf("%c", c);
-#endif
       }
     }
-#ifdef DEBUG
     else {
-      printf("scan_code=%x\n", scan_code);
+      debug("scan_code=%x", scan_code);
     }
-#endif
-
   }
-
 }
 
 void init_keyboard() {
-  printf("initializing keyboard.\n");
+  info("initializing keyboard.");
   // empty buffer in case it's not empty already
   //char c;
   // while ((c = inb(KBD_DATA_PORT))) {

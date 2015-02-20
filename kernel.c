@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "log.h"
 #include "descriptor_tables.h"
 #include "framebuffer.h"
 #include "keyboard.h"
@@ -10,16 +10,16 @@
 
 void kernel(multiboot_info_t *info) {
   fb_clear();
-  printf("No. 5 is alive!\n");
+  info("No. 5 is alive!");
 
-  char greeting[] = "No. 5 is alive!\n";
+  char greeting[] = "No. 5 is alive!";
   serial_write(greeting, strlen(greeting));
 
-  printf("multiboot header flags: %x\n", info->flags);
+  debug("multiboot header flags: %x", info->flags);
 
   init_descriptor_tables();
 
-  printf("Generating random interrupts...\n");
+  debug("Generating random interrupts...");
   asm volatile ("int $0x3");
   asm volatile ("int $0x4");
 

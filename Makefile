@@ -5,7 +5,8 @@ OBJECTS = multiboot.asm.o framebuffer.o loader.asm.o kernel.o \
 CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
 					-ffreestanding \
-					-Wall -Wextra -Wno-unused -Werror -g -c
+					-Wall -Wextra -Wno-unused -Werror -g -c \
+					-DDEBUG=3
 # things you may or may not need -nostdinc -fno-builtin -nostdlib -nostartfiles -nodefaultlibs
 # see http://forum.osdev.org/viewtopic.php?f=1&t=25585
 LDFLAGS = -T link.ld -melf_i386 -L/usr/lib/gcc/i686-linux-gnu/4.6 -lgcc
@@ -30,7 +31,7 @@ os.iso: kernel.elf kernel.sym
               -o os.iso                       \
               iso
 
-kernel.elf: $(OBJECTS)
+kernel.elf: $(OBJECTS) log.h
 	ld $(LDFLAGS) $(OBJECTS) -o kernel.elf
 
 %.o: %.c

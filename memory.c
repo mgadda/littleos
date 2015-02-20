@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "string.h"
 #include "memory.h"
+#include "log.h"
 
 extern uint32_t kernel_end; // defined in link.ld
 uint32_t next_free = (uint32_t)&kernel_end;
@@ -17,6 +18,6 @@ void *kmalloc_page() {
     next_free &= 0xfffff000; // align it
     next_free += 0x1000; // advance to unallocated memory
   }
-  printf("[memory] allocated page at %x\n", next_free);
+  debug("allocated page at %x", next_free);
   return kmalloc(0x1000);
 }

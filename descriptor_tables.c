@@ -7,8 +7,7 @@
 #include "descriptor_tables.h"
 #include "io.h"
 #include "apic.h"
-
-#include "debug.h"
+#include "log.h"
 
 // Internal use only
 extern void gdt_flush(gdt_ptr_t*);
@@ -280,10 +279,10 @@ static void PIC_remap(uint8_t offset1, uint8_t offset2) {
 }
 
 static void init_idt() {
-  printf("cpuHasMSR=%i\n", cpuHasMSR());
-  printf("Disabling APIC...\n");
+  debug("cpuHasMSR=%i", cpuHasMSR());
+  info("Disabling APIC...");
   uint32_t msr = disable_apic();
-  printf("MSR 0x1b=%x\n", msr);
+  debug("MSR 0x1b=%x", msr);
 
   idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
   idt_ptr.base = idt_entries;
@@ -332,7 +331,7 @@ static void init_idt() {
   idt_set_gate(31, isr31, IDT_SELECTOR, flags);
 
   // Remap the irq table
-  printf("Remapping IRQs\n");
+  info("Remapping IRQs");
   PIC_remap(0x20, 0x28);
   // outb(0x20, 0x11);
   // outb(0xA0, 0x11);
@@ -366,7 +365,7 @@ static void init_idt() {
 
   // enable hardware interrupts
   asm volatile ("sti");
-  if (are_interrupts_enabled()) printf("interrupts enabled.\n");
+  if (are_interrupts_enabled()) info("interrupts enabled.");
 }
 
 static void idt_set_gate(

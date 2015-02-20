@@ -98,7 +98,7 @@ void *memmove(void *dst, const void *src, size_t len) {
   return dstmem;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_PRINTF_LINE_NO
 static uint32_t line_count = 0;
 #endif
 
@@ -106,7 +106,7 @@ int printf(const char *format, ...) {
   va_list ap;
   va_start(ap, format);
 
-#ifdef DEBUG
+#ifdef DEBUG_PRINTF_LINE_NO
   char line_count_str[20];
   fb_write_str(uitoa(line_count++, line_count_str, 10));
   fb_write_str(": ");

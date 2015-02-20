@@ -4,7 +4,7 @@
 #include "string.h"
 #include "framebuffer.h"
 #include "io.h"
-#include "debug.h"
+#include "log.h"
 
 #define PIC1            0x20    /* IO base address for master PIC */
 #define PIC2            0xA0    /* IO base address for slave PIC */
@@ -22,8 +22,8 @@ void isr_handler(registers_t regs) {
     isr_t handler = interrupt_handlers[regs.int_no];
     handler(regs);
   } else {
-    printf("unhandled s/w interrupt: %i\n", regs.int_no);
-    printf("eip: %x\n", regs.eip);
+    debug("unhandled s/w interrupt: %i\n", regs.int_no);
+    debug("eip: %x\n", regs.eip);
   }
 }
 
@@ -42,7 +42,7 @@ void ack_irq(int int_no) {
 // This gets called from our ASM interrupt handler stub.
 void irq_handler(registers_t regs)
 {
-  //printf("h/w interrupt: %i\n", regs.int_no);
+  //debug("h/w interrupt: %i\n", regs.int_no);
 
   ack_irq(regs.int_no);
 

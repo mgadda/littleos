@@ -6,7 +6,7 @@
 #include "isr.h"
 #include "string.h"
 #include "memory.h"
-#include "debug.h"
+#include "log.h"
 
 extern directory_t boot_page_directory; // pre-allocated by nasm (also page aligned)
 
@@ -39,7 +39,7 @@ static void clear_frame(uint32_t addr) {
 }
 
 void handle_page_fault(registers_t regs) {
-  printf("Page fault!");
+  debug("Page fault!");
 }
 
 #define PAGE_READONLY   0
@@ -50,18 +50,18 @@ void handle_page_fault(registers_t regs) {
 #define PAGE_SIZE_4MB   1
 
 void map(directory_t *page_directory, uint32_t vaddr, uint32_t paddr) {
-  // printf("\n[paging] identity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
+  // debug("\nidentity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
 
   uint32_t directory_offset = vaddr >> 22; // 31:22
   uint32_t table_offset = (vaddr >> 12) & 0x3ff; // 21:12
-  // printf("\tdirectory offset: %x\n", directory_offset);
-  // printf("\ttable offset: %x\n", table_offset);
+  // debug("\tdirectory offset: %x\n", directory_offset);
+  // debug("\ttable offset: %x\n", table_offset);
 
   directory_t *directory = &page_directory[directory_offset/4];
   page_t *table;
-  // printf("[paging] kernel page directory resides at %x\n", page_directory);
+  // debug("kernel page directory resides at %x\n", page_directory);
   if (!directory->present) {
-    // printf("[paging] configuring new page directory entry with index %i at %x\n", directory_offset, directory);
+    // debug("configuring new page directory entry with index %i at %x\n", directory_offset, directory);
     directory->present = 1;
     directory->rw = PAGE_READWRITE;
     directory->us = PAGE_KERNEL;
@@ -71,22 +71,22 @@ void map(directory_t *page_directory, uint32_t vaddr, uint32_t paddr) {
     memset(table, 0, 0x1000);
 
     directory->page_table = (uint32_t)table >> 12; // table base (20 high bits)
-    // printf("[paging] directory->page_table is now %x\n", directory->page_table << 12);
+    // debug("directory->page_table is now %x\n", directory->page_table << 12);
   } else {
     table = (page_t*)(directory->page_table << 12);
-    // printf("[paging] directory->page_table already exists at %x\n", table);
+    // debug("c directory->page_table already exists at %x\n", table);
   }
 
   page_t *page = &table[table_offset];
   if (!page->present) {
-    // printf("[paging] configuring new page table entry at %x\n", page);
+    // debug("configuring new page table entry at %x\n", page);
     page->present = 1;
     page->rw = PAGE_READWRITE;
     page->us = PAGE_KERNEL;
   }
 
   page->page_frame = paddr >> 12; // frame base (20 high bits)
-  // printf("[paging] page %x is now mapped to frame %x\n", addr, page->page_frame << 12);
+  // debug("page %x is now mapped to frame %x\n", addr, page->page_frame << 12);
   set_frame(paddr);
 }
 
@@ -94,14 +94,14 @@ extern void load_page_directory(directory_t *directory);
 extern void enable_paging();
 
 void init_paging() {
-  //printf("[paging] initializing paging...\n");
+  info("initializing paging...");
 
   // listen for page faults
   register_interrupt_handler(14, handle_page_fault);
 
-  printf("boot_page_directory=%x\n", &boot_page_directory);
+  debug("boot_page_directory=%x", &boot_page_directory);
 
   load_page_directory(&boot_page_directory);
   enable_paging();
-  printf("[paging] paging enabled, good luck.\n");
+  info("paging enabled, good luck.");
 }
