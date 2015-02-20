@@ -27,6 +27,6 @@
 #define error(msg, ...)
 #endif
 
-#define PANIC(msg) printf("PANIC! %s at %s:%i\n", msg, __FILE__, __LINE__); asm ("hlt")
+#define PANIC(msg) printf("PANIC! %s at %s:%i\n", msg, __FILE__, __LINE__); asm volatile("cli\nhlt")
 
 #endif

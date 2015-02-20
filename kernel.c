@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #include "log.h"
 #include "descriptor_tables.h"
 #include "framebuffer.h"
@@ -7,6 +9,13 @@
 #include "string.h"
 #include "timer.h"
 #include "paging.h"
+#include "isr.h"
+
+bool int3_happened = false;
+
+void int3_handler(registers_t regs) {
+  int3_happened = true;
+}
 
 void kernel(multiboot_info_t *info) {
   fb_clear();
@@ -20,8 +29,10 @@ void kernel(multiboot_info_t *info) {
   init_descriptor_tables();
 
   debug("Generating random interrupts...");
-  asm volatile ("int $0x3");
+  register_interrupt_handler(3, int3_handler);
+  //asm volatile ("int $0x3");
   asm volatile ("int $0x4");
+  if (!int3_happened) PANIC("interrupts improperly configured, no point in continuing.");
 
   //init_timer(19);
   init_keyboard();
