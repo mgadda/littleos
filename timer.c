@@ -5,6 +5,7 @@
 #include "framebuffer.h"
 #include "string.h"
 #include "io.h"
+#include "log.h"
 
 #define PIT_TIMER_MAX_HZ 1193180
 #define PIT_DATA_PORT0 0x40
@@ -18,12 +19,12 @@ uint32_t tick = 0;
 
 static void timer_cb(registers_t regs) {
   tick++;
-  printf("tick: %i\n", tick);
+  debug("tick: %i\n", tick);
   //printf("h/w interrupt: %i\n", regs.int_no);
 }
 
 void init_timer(uint32_t frequency) {
-  printf("initializing timer.\n");
+  info("initializing timer.\n");
   register_interrupt_handler(IRQ0, &timer_cb);
 
   uint32_t divisor = PIT_TIMER_MAX_HZ / frequency;

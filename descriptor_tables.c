@@ -280,7 +280,7 @@ static void PIC_remap(uint8_t offset1, uint8_t offset2) {
 
 static void init_idt() {
   debug("cpuHasMSR=%i", cpuHasMSR());
-  info("Disabling APIC...");
+  info("Disabling APIC.");
   uint32_t msr = disable_apic();
   debug("MSR 0x1b=%x", msr);
 
