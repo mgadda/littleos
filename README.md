@@ -7,14 +7,16 @@ Not much just yet. The kernel is loaded via GRUB legacy, identity maps the first
 
 ## Building
 
-1. Install Vagrant: http://www.vagrantup.com/downloads
-2. `cd ~/path/to/repo`
-3. `vagrant up` – *cross fingers here*
-4. `vagrant ssh`
-5. `cd /vagrant`
-6. make
+1. Install bochs (OS X): `brew install bochs`
+2. [Install VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+2. [Install Vagrant](http://www.vagrantup.com/downloads)
+3. `cd ~/path/to/repo`
+4. `vagrant up` – *cross fingers here*
+5. `vagrant ssh`
+6. `cd /vagrant`
+7. make
 
-In another shell run: `make run`
+In another shell on the host machine, run: `make run`
 
 While it's possible to run bochs from within Vagrant (some modifications to bochssrc.txt are required), it's a terrible idea. Bochs is already a pretty slow emulator, then compounded by running it inside Virtual Box. So it's better to do the compilation within vagrant (virtual box) to ensure a consistent development environment but then test/run the kernel on the host development machine. 
 
