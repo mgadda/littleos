@@ -43,7 +43,7 @@ void kernel(multiboot_info_t *info) {
   if (!int3_happened) PANIC("interrupts improperly configured, no point in continuing.");
   if (!int4_happened) PANIC("interrupts improperly configured, no point in continuing.");
 
-  //init_timer(19);
+  init_timer(19);
   init_keyboard();
   init_paging();
   return;
