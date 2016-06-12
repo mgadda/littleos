@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
 					-ffreestanding \
 					-Wall -Wextra -Wno-unused -Werror -g -c \
-					-DDEBUG=3
+					-DDEBUG=4
 # things you may or may not need -nostdinc -fno-builtin -nostdlib -nostartfiles -nodefaultlibs
 # see http://forum.osdev.org/viewtopic.php?f=1&t=25585
 LDFLAGS = -T link.ld -melf_i386 -L/usr/lib/gcc/i686-linux-gnu/4.6 -lgcc
