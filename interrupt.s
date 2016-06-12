@@ -112,7 +112,7 @@ ISR_NOERRCODE 26
 ISR_NOERRCODE 27
 ISR_NOERRCODE 28
 ISR_NOERRCODE 29
-ISR_NOERRCODE 30
+ISR_NOERRCODE 30 ; this should potentially be ISR_ERRCODE, see http://wiki.osdev.org/James_Molloy's_Tutorial_Known_Bugs
 ISR_NOERRCODE 31
 
 IRQ 0, 32
