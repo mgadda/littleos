@@ -6,7 +6,7 @@
 #include "string.h"
 #include "serial.h"
 
-#define FRAMEBUFFER_ADDR 0x000B8000;
+#define FRAMEBUFFER_ADDR 0xC00B8000;
 #define FB_WIDTH 80
 #define FB_HEIGHT 25
 #define TAB "  "
