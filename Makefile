@@ -1,7 +1,7 @@
-OBJECTS = multiboot.asm.o framebuffer.o loader.asm.o kernel.o \
+OBJECTS = multiboot.asm.o loader.asm.o paging.o paging.asm.o kernel.o \
 					io.asm.o serial.o string.o interrupt.asm.o \
 					descriptor_tables.o descriptor_tables.asm.o isr.o timer.o \
-					apic.o keyboard.o paging.o paging.asm.o memory.o
+					apic.o keyboard.o memory.o framebuffer.o
 CC = gcc
 CFLAGS = -m32 -fno-stack-protector \
 					-ffreestanding \

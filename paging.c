@@ -49,6 +49,9 @@ void handle_page_fault(registers_t regs) {
 #define PAGE_SIZE_4KB   0
 #define PAGE_SIZE_4MB   1
 
+// From what i can tell, this was written before giving up
+// and implementing it in about 4 lines of asm in paging.s.
+// It should probably be removed.
 void map(directory_t *page_directory, uint32_t vaddr, uint32_t paddr) {
   // debug("\nidentity mapping %x-%x\n", addr & 0xfffff000, (addr & 0xfffff000) + 0x1000 - 1);
 

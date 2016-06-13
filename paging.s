@@ -6,16 +6,29 @@ PAGING_PRESENT equ 1b
 PAGING_WRITABLE equ 10b
 PAGING_USER_ACCESSIBLE equ 100b
 PAGING_SIZE_4MB equ 10000000b
+
+KERNEL_VIRTUAL_BASE equ 0xC0000000                  ; 3GB
+KERNEL_PAGE_NUMBER equ (KERNEL_VIRTUAL_BASE >> 22)  ; Page directory index of kernel's 4MB PTE.
+
 ; identity map 0x00000000 - 0x00400000 (first 4MB) which includes kernel
 ; and paging data structures
 
+KERNEL_PDE_FLAGS equ PAGING_PRESENT | PAGING_WRITABLE | PAGING_SIZE_4MB
+
+; Adapted from http://wiki.osdev.org/Higher_Half_bare_bones
 section .data
 align 4096
 boot_page_directory:
-  pde_frame_addr equ 0x0
-  dd (pde_frame_addr & 0xfff00000) + (PAGING_PRESENT | PAGING_WRITABLE | PAGING_SIZE_4MB)
-  times 0x3ff dd 0       ; allocate remaining page directory entries
+  dd KERNEL_PDE_FLAGS ; what is this for?
+  times (KERNEL_PAGE_NUMBER - 1) dd 0 ; pages before kernel page
+  dd KERNEL_PDE_FLAGS ; kernel page
+  times (1024 - KERNEL_PAGE_NUMBER - 1) dd 0 ; pages after kernel page
 
+  ; pde_frame_addr equ 0x0
+  ; dd (pde_frame_addr & 0xfff00000) + (PAGING_PRESENT | PAGING_WRITABLE | PAGING_SIZE_4MB)
+  ; times 0x3ff dd 0       ; allocate remaining page directory entries
+
+; TODO: remove this, unused.
 ; align 4096
 ; boot_page_table:
 ; %assign frame_addr 0

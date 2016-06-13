@@ -24,7 +24,7 @@ void int4_handler(registers_t regs) {
   int4_happened = true;
 }
 
-void kernel(multiboot_info_t *info) {
+void kernel_main(multiboot_info_t *info) {
   fb_clear();
   info("No. 5 is alive!");
 
@@ -45,6 +45,10 @@ void kernel(multiboot_info_t *info) {
 
   init_timer(19);
   init_keyboard();
-  init_paging();
+  //init_paging();
+
+  // attempt to access address from unmapped page of memory:
+  int32_t *fault = (int32_t*)0xC0100004;
+  int32_t value = *fault;
   return;
 }
