@@ -4,8 +4,8 @@
 #include "memory.h"
 #include "log.h"
 
-extern uint32_t kernel_end; // defined in link.ld
-uint32_t next_free = (uint32_t)&kernel_end;
+extern uint32_t kernel_virtual_end; // defined in link.ld
+uint32_t next_free = (uint32_t)&kernel_virtual_end;
 
 void *kmalloc(size_t size) {
   void *mem =  (void*)next_free;

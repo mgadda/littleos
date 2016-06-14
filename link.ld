@@ -2,7 +2,8 @@ ENTRY(loader)
 
 . = 0xC0100000;
 
-kernel_start = .;
+kernel_virtual_start = .;
+kernel_physical_start = . - 0xC0000000;
 
 SECTIONS {
   .multiboot ALIGN (0x1000): AT(ADDR(.multiboot) - 0xC0000000) { multiboot.asm.o }
@@ -30,4 +31,5 @@ SECTIONS {
 
 }
 
-kernel_end = .;
+kernel_virtual_end = .;
+kernel_physical_end = . - 0xC0000000;

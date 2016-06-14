@@ -11,6 +11,12 @@
 #include "paging.h"
 #include "isr.h"
 
+// These are not functions. Do not call them.
+extern void kernel_virtual_start();
+extern void kernel_virtual_end();
+extern void kernel_physical_start();
+extern void kernel_physical_end();
+
 bool int3_happened = false;
 bool int4_happened = false;
 
@@ -26,6 +32,9 @@ void int4_handler(registers_t regs) {
 
 void kernel_main(multiboot_info_t *info) {
   fb_clear();
+  debug("kernel virtual region: %x..%x", &kernel_virtual_start, &kernel_virtual_end);
+  debug("kernel physical region: %x..%x", &kernel_physical_start, &kernel_physical_end);
+
   info("No. 5 is alive!");
 
   char greeting[] = "No. 5 is alive!";
