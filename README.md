@@ -16,9 +16,9 @@ Not much just yet. The kernel is loaded via GRUB legacy, identity maps the first
 6. `cd /vagrant`
 7. make
 
-In another shell on the host machine, run: `make run`
+In another shell *on the host machine*, run: `make run`
 
 While it's possible to run bochs from within Vagrant (some modifications to bochssrc.txt are required), it's a terrible idea. Bochs is already a pretty slow emulator, then compounded by running it inside Virtual Box. So it's better to do the compilation within vagrant (virtual box) to ensure a consistent development environment but then test/run the kernel on the host development machine. 
 
-The takehome is that you have to remember to run `make` inside the Vagrant box before `make run` otherwise your build experience will be at the mercy of the host development machine.
+The takehome is that you have to remember to run `make` inside the Vagrant box before `make run` otherwise your build experience will be at the mercy of the host development machine. If that happens to be some kind of linux, it might go okay. If that happens to be macOS, it will almost certainly fail. 
 
